@@ -1,4 +1,4 @@
-import '../data/itens_iniciais.dart';
+import '../lib/data/itens_iniciais.dart';
 
 void main() {
   final favoritos = itensIniciais
