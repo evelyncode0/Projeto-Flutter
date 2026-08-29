@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../data/itens_iniciais.dart';
-import '../widgets/item_card.dart';
+import '../widgets/catalogo_grade.dart';
+import '../widgets/resumo_catalogo.dart';
 
 class CatalogoHome extends StatelessWidget {
   const CatalogoHome({super.key});
@@ -12,17 +13,45 @@ class CatalogoHome extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Meu catálogo')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Seus itens', style: textTheme.headlineSmall),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final lista = CatalogoGrade(itens: itensIniciais);
 
-            const SizedBox(height: 12),
+            if (constraints.maxWidth < 900) {
+              return Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Seus itens', style: textTheme.headlineSmall),
+                    const SizedBox(height: 12),
+                    Expanded(child: lista),
+                  ],
+                ),
+              );
+            }
 
-            for (final item in itensIniciais) ItemCard(item: item),
-          ],
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Seus itens', style: textTheme.headlineSmall),
+                        const SizedBox(height: 12),
+                        Expanded(child: lista),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  const SizedBox(width: 320, child: ResumoCatalogo()),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );

@@ -11,13 +11,12 @@ class ItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: Icon(item.favorito ? Icons.favorite : Icons.bookmark_border),
-        title: Text(item.titulo),
-        subtitle: Text(
-          item.descricaoExibicao,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
+        leading: Semantics(
+          label: item.favorito ? 'Item favorito' : 'Item não favorito',
+          child: Icon(item.favorito ? Icons.favorite : Icons.bookmark_border),
         ),
+        title: Text(item.titulo),
+        subtitle: Text(item.descricaoExibicao),
       ),
     );
   }
