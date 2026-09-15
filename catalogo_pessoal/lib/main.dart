@@ -21,14 +21,3 @@ class CatalogoApp extends StatelessWidget {
     );
   }
 }
-
-// class HomeScreen extends StatelessWidget {
-//   const HomeScreen({super.key});
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: const Text('Catalogo pessoal')),
-//       body: const Center(child: Text('Ambiente validado com sucesso!')),
-//     );
-//   }
-// }
