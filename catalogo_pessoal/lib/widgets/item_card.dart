@@ -6,18 +6,15 @@ class ItemCard extends StatelessWidget {
   const ItemCard({
     required this.item,
     required this.onFavoritoPressed,
-    required this.onRemover,
     required this.onItemPressed,
+    required this.onRemover,
     super.key,
   });
 
   final ItemCatalogo item;
-
   final VoidCallback onFavoritoPressed;
-
-  final VoidCallback onRemover;
-
   final VoidCallback onItemPressed;
+  final VoidCallback onRemover;
 
   @override
   Widget build(BuildContext context) {
@@ -25,12 +22,13 @@ class ItemCard extends StatelessWidget {
       child: ListTile(
         onTap: onItemPressed,
 
-        leading: IconButton(
-          tooltip: item.favorito
-              ? 'Remover dos favoritos'
-              : 'Adicionar aos favoritos',
-          onPressed: onFavoritoPressed,
-          icon: Icon(item.favorito ? Icons.favorite : Icons.favorite_border),
+        leading: Semantics(
+          label: item.favorito ? 'Item favorito' : 'Item não favorito',
+          child: IconButton(
+            tooltip: 'Alternar favorito',
+            onPressed: onFavoritoPressed,
+            icon: Icon(item.favorito ? Icons.favorite : Icons.bookmark_border),
+          ),
         ),
 
         title: Text(item.titulo),

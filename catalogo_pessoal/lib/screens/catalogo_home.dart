@@ -8,6 +8,8 @@ import '../widgets/catalogo_grade.dart';
 
 import '../widgets/resumo_catalogo.dart';
 
+import 'tela_detalhe.dart';
+
 class CatalogoHome extends StatefulWidget {
   const CatalogoHome({super.key});
 
@@ -16,20 +18,23 @@ class CatalogoHome extends StatefulWidget {
 }
 
 class _CatalogoHomeState extends State<CatalogoHome> {
+  // Controller usado para controlar o campo de texto.
   final TextEditingController _tituloController = TextEditingController();
 
+  // Lista principal de itens do catálogo.
   List<ItemCatalogo> _itens = [...itensIniciais];
 
+  // Controla se o filtro "Favoritos" está ativado.
   bool _mostrarSomenteFavoritos = false;
 
+  // Guarda o item que foi selecionado.
   ItemCatalogo? _itemSelecionado;
 
+  // Valor derivado:
+  // calcula a quantidade de favoritos a partir de _itens.
   int get _totalFavoritos => _itens.where((item) => item.favorito).length;
 
-  // ==========================================
-  // FAVORITO
-  // ==========================================
-
+  // Alterna o favorito de um item usando o ID.
   void _alternarFavorito(String id) {
     setState(() {
       _itens = [
@@ -37,45 +42,38 @@ class _CatalogoHomeState extends State<CatalogoHome> {
           if (item.id == id) item.copyWith(favorito: !item.favorito) else item,
       ];
 
+      // Mantém o item selecionado atualizado.
       if (_itemSelecionado?.id == id) {
         _itemSelecionado = _itens.firstWhere((item) => item.id == id);
       }
     });
   }
 
-  // ==========================================
-  // FILTRO
-  // ==========================================
-
+  // Ativa ou desativa o filtro de favoritos.
   void _alternarFiltroFavoritos() {
     setState(() {
       _mostrarSomenteFavoritos = !_mostrarSomenteFavoritos;
     });
   }
 
-  // ==========================================
-  // SELEÇÃO
-  // ==========================================
-
+  // Seleciona um item do catálogo.
   void _selecionarItem(ItemCatalogo item) {
     setState(() {
       _itemSelecionado = item;
     });
   }
 
-  // ==========================================
-  // ADICIONAR
-  // ==========================================
-
+  // Adiciona um novo item ao catálogo.
   void _adicionarItem() {
     final titulo = _tituloController.text.trim();
 
+    // Não adiciona se o título estiver vazio.
     if (titulo.isEmpty) {
       return;
     }
 
     final novoItem = ItemCatalogo(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
       titulo: titulo,
       status: StatusItem.queroConhecer,
     );
@@ -84,13 +82,11 @@ class _CatalogoHomeState extends State<CatalogoHome> {
       _itens = [..._itens, novoItem];
     });
 
+    // Limpa o campo depois da inclusão.
     _tituloController.clear();
   }
 
-  // ==========================================
-  // ALTERAR STATUS
-  // ==========================================
-
+  // Altera o status de um item usando o ID.
   void _alterarStatus(String id, StatusItem novoStatus) {
     setState(() {
       _itens = [
@@ -98,33 +94,52 @@ class _CatalogoHomeState extends State<CatalogoHome> {
           if (item.id == id) item.copyWith(status: novoStatus) else item,
       ];
 
+      // Atualiza também o item selecionado.
       if (_itemSelecionado?.id == id) {
         _itemSelecionado = _itens.firstWhere((item) => item.id == id);
       }
     });
   }
 
-  // ==========================================
-  // REMOVER
-  // ==========================================
-
+  // Remove um item usando o ID.
   void _remover(String id) {
     setState(() {
-      _itens = [
-        for (final item in _itens)
-          if (item.id != id) item,
-      ];
+      _itens = _itens.where((item) => item.id != id).toList();
 
+      // Se o item removido estava selecionado,
+      // limpa a seleção.
       if (_itemSelecionado?.id == id) {
         _itemSelecionado = null;
       }
     });
   }
 
-  // ==========================================
-  // CICLO DE VIDA
-  // ==========================================
+  Future<void> _abrirDetalhe(ItemCatalogo item) async {
+    final resultado = await Navigator.push<ItemCatalogo>(
+      context,
+      MaterialPageRoute<ItemCatalogo>(
+        builder: (context) {
+          return TelaDetalhe(item: item);
+        },
+      ),
+    );
 
+    if (resultado == null) {
+      return;
+    }
+
+    _substituirPorId(resultado);
+  }
+
+  void _substituirPorId(ItemCatalogo atualizado) {
+    setState(() {
+      _itens = _itens.map((item) {
+        return item.id == atualizado.id ? atualizado : item;
+      }).toList();
+    });
+  }
+
+  // Libera o controller quando a tela deixa de existir.
   @override
   void dispose() {
     _tituloController.dispose();
@@ -135,6 +150,7 @@ class _CatalogoHomeState extends State<CatalogoHome> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
+    // Lista derivada de acordo com o filtro.
     final itensVisiveis = _mostrarSomenteFavoritos
         ? _itens.where((item) => item.favorito).toList()
         : _itens;
@@ -147,12 +163,12 @@ class _CatalogoHomeState extends State<CatalogoHome> {
             final lista = CatalogoGrade(
               itens: itensVisiveis,
               onFavoritoPressed: _alternarFavorito,
+              onItemPressed: _abrirDetalhe,
               onRemover: _remover,
-              onItemPressed: _selecionarItem,
             );
 
             // ==========================================
-            // ESPAÇO MENOR
+            // LAYOUT PARA ESPAÇOS MENORES
             // ==========================================
 
             if (constraints.maxWidth < 900) {
@@ -228,7 +244,7 @@ class _CatalogoHomeState extends State<CatalogoHome> {
             }
 
             // ==========================================
-            // ESPAÇO MAIOR
+            // LAYOUT PARA ESPAÇOS MAIORES
             // ==========================================
 
             return Padding(
