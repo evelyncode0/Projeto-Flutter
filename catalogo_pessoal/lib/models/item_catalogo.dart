@@ -4,12 +4,14 @@ class ItemCatalogo {
   final String id;
   final String titulo;
   final String? descricao;
+  final String categoria;
   final StatusItem status;
   final bool favorito;
 
   const ItemCatalogo({
     required this.id,
     required this.titulo,
+    required this.categoria,
     required this.status,
     this.descricao,
     this.favorito = false,
@@ -19,6 +21,7 @@ class ItemCatalogo {
     String? id,
     String? titulo,
     String? descricao,
+    String? categoria,
     StatusItem? status,
     bool? favorito,
   }) {
@@ -26,6 +29,7 @@ class ItemCatalogo {
       id: id ?? this.id,
       titulo: titulo ?? this.titulo,
       descricao: descricao ?? this.descricao,
+      categoria: categoria ?? this.categoria,
       status: status ?? this.status,
       favorito: favorito ?? this.favorito,
     );

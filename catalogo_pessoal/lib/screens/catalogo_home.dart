@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../data/itens_iniciais.dart';
-
 import '../models/item_catalogo.dart';
-
 import '../widgets/catalogo_grade.dart';
-
 import '../widgets/resumo_catalogo.dart';
-
 import 'tela_detalhe.dart';
+import 'tela_formulario.dart';
 
 class CatalogoHome extends StatefulWidget {
   const CatalogoHome({super.key});
@@ -18,9 +15,6 @@ class CatalogoHome extends StatefulWidget {
 }
 
 class _CatalogoHomeState extends State<CatalogoHome> {
-  // Controller usado para controlar o campo de texto.
-  final TextEditingController _tituloController = TextEditingController();
-
   // Lista principal de itens do catálogo.
   List<ItemCatalogo> _itens = [...itensIniciais];
 
@@ -30,8 +24,7 @@ class _CatalogoHomeState extends State<CatalogoHome> {
   // Guarda o item que foi selecionado.
   ItemCatalogo? _itemSelecionado;
 
-  // Valor derivado:
-  // calcula a quantidade de favoritos a partir de _itens.
+  // Quantidade de favoritos.
   int get _totalFavoritos => _itens.where((item) => item.favorito).length;
 
   // Alterna o favorito de um item usando o ID.
@@ -63,27 +56,71 @@ class _CatalogoHomeState extends State<CatalogoHome> {
     });
   }
 
-  // Adiciona um novo item ao catálogo.
-  void _adicionarItem() {
-    final titulo = _tituloController.text.trim();
+  // Abre o formulário para criar um novo item.
+  Future<void> _abrirFormulario() async {
+    final resultado = await Navigator.push<ItemCatalogo>(
+      context,
+      MaterialPageRoute<ItemCatalogo>(
+        builder: (context) {
+          return const TelaFormulario();
+        },
+      ),
+    );
 
-    // Não adiciona se o título estiver vazio.
-    if (titulo.isEmpty) {
+    if (!mounted || resultado == null) {
       return;
     }
 
-    final novoItem = ItemCatalogo(
-      id: DateTime.now().microsecondsSinceEpoch.toString(),
-      titulo: titulo,
-      status: StatusItem.queroConhecer,
+    _aplicarResultado(resultado);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Item adicionado com sucesso!')),
+    );
+  }
+
+  // Abre o formulário para editar um item existente.
+  Future<void> _editarItem(ItemCatalogo item) async {
+    final resultado = await Navigator.push<ItemCatalogo>(
+      context,
+      MaterialPageRoute<ItemCatalogo>(
+        builder: (context) {
+          return TelaFormulario(itemInicial: item);
+        },
+      ),
     );
 
-    setState(() {
-      _itens = [..._itens, novoItem];
-    });
+    if (!mounted || resultado == null) {
+      return;
+    }
 
-    // Limpa o campo depois da inclusão.
-    _tituloController.clear();
+    _aplicarResultado(resultado);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Item atualizado com sucesso!')),
+    );
+  }
+
+  // Aplica o resultado vindo do formulário.
+  //
+  // Se o ID já existir, substitui o item.
+  // Se o ID não existir, adiciona um novo item.
+  void _aplicarResultado(ItemCatalogo resultado) {
+    final indice = _itens.indexWhere((item) => item.id == resultado.id);
+
+    setState(() {
+      if (indice == -1) {
+        _itens = [..._itens, resultado];
+      } else {
+        _itens = [
+          for (final item in _itens) item.id == resultado.id ? resultado : item,
+        ];
+      }
+
+      // Mantém a seleção atualizada.
+      if (_itemSelecionado?.id == resultado.id) {
+        _itemSelecionado = resultado;
+      }
+    });
   }
 
   // Altera o status de um item usando o ID.
@@ -114,6 +151,7 @@ class _CatalogoHomeState extends State<CatalogoHome> {
     });
   }
 
+  // Abre a tela de detalhes de um item.
   Future<void> _abrirDetalhe(ItemCatalogo item) async {
     final resultado = await Navigator.push<ItemCatalogo>(
       context,
@@ -124,26 +162,25 @@ class _CatalogoHomeState extends State<CatalogoHome> {
       ),
     );
 
-    if (resultado == null) {
+    if (!mounted || resultado == null) {
       return;
     }
 
     _substituirPorId(resultado);
   }
 
+  // Substitui um item existente pelo mesmo ID.
   void _substituirPorId(ItemCatalogo atualizado) {
     setState(() {
       _itens = _itens.map((item) {
         return item.id == atualizado.id ? atualizado : item;
       }).toList();
-    });
-  }
 
-  // Libera o controller quando a tela deixa de existir.
-  @override
-  void dispose() {
-    _tituloController.dispose();
-    super.dispose();
+      // Mantém a seleção atualizada.
+      if (_itemSelecionado?.id == atualizado.id) {
+        _itemSelecionado = atualizado;
+      }
+    });
   }
 
   @override
@@ -157,13 +194,15 @@ class _CatalogoHomeState extends State<CatalogoHome> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Meu catálogo')),
+
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
             final lista = CatalogoGrade(
               itens: itensVisiveis,
               onFavoritoPressed: _alternarFavorito,
-              onItemPressed: _abrirDetalhe,
+              onItemPressed: _selecionarItem,
+              onDetalhesPressed: _abrirDetalhe,
               onRemover: _remover,
             );
 
@@ -185,11 +224,14 @@ class _CatalogoHomeState extends State<CatalogoHome> {
                             style: textTheme.headlineSmall,
                           ),
                         ),
+
                         Text(
                           'Favoritos: $_totalFavoritos',
                           style: textTheme.bodyMedium,
                         ),
+
                         const SizedBox(width: 12),
+
                         FilterChip(
                           label: const Text('Favoritos'),
                           selected: _mostrarSomenteFavoritos,
@@ -202,27 +244,14 @@ class _CatalogoHomeState extends State<CatalogoHome> {
 
                     const SizedBox(height: 12),
 
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _tituloController,
-                            decoration: const InputDecoration(
-                              labelText: 'Título',
-                              hintText: 'Digite o nome do item',
-                              border: OutlineInputBorder(),
-                            ),
-                            onSubmitted: (_) {
-                              _adicionarItem();
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        ElevatedButton(
-                          onPressed: _adicionarItem,
-                          child: const Text('Adicionar'),
-                        ),
-                      ],
+                    // Botão para adicionar item.
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: _abrirFormulario,
+                        icon: const Icon(Icons.add),
+                        label: const Text('Adicionar item'),
+                      ),
                     ),
 
                     const SizedBox(height: 12),
@@ -231,11 +260,13 @@ class _CatalogoHomeState extends State<CatalogoHome> {
 
                     const SizedBox(height: 16),
 
+                    // Resumo também aparece no espaço menor.
                     SizedBox(
-                      width: 320,
+                      width: double.infinity,
                       child: ResumoCatalogo(
                         itemSelecionado: _itemSelecionado,
                         onStatusChanged: _alterarStatus,
+                        onEditar: _editarItem,
                       ),
                     ),
                   ],
@@ -263,11 +294,14 @@ class _CatalogoHomeState extends State<CatalogoHome> {
                                 style: textTheme.headlineSmall,
                               ),
                             ),
+
                             Text(
                               'Favoritos: $_totalFavoritos',
                               style: textTheme.bodyMedium,
                             ),
+
                             const SizedBox(width: 12),
+
                             FilterChip(
                               label: const Text('Favoritos'),
                               selected: _mostrarSomenteFavoritos,
@@ -280,27 +314,14 @@ class _CatalogoHomeState extends State<CatalogoHome> {
 
                         const SizedBox(height: 12),
 
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                controller: _tituloController,
-                                decoration: const InputDecoration(
-                                  labelText: 'Título',
-                                  hintText: 'Digite o nome do item',
-                                  border: OutlineInputBorder(),
-                                ),
-                                onSubmitted: (_) {
-                                  _adicionarItem();
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            ElevatedButton(
-                              onPressed: _adicionarItem,
-                              child: const Text('Adicionar'),
-                            ),
-                          ],
+                        // Botão para adicionar item.
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: _abrirFormulario,
+                            icon: const Icon(Icons.add),
+                            label: const Text('Adicionar item'),
+                          ),
                         ),
 
                         const SizedBox(height: 12),
@@ -312,11 +333,13 @@ class _CatalogoHomeState extends State<CatalogoHome> {
 
                   const SizedBox(width: 16),
 
+                  // Painel lateral.
                   SizedBox(
                     width: 320,
                     child: ResumoCatalogo(
                       itemSelecionado: _itemSelecionado,
                       onStatusChanged: _alterarStatus,
+                      onEditar: _editarItem,
                     ),
                   ),
                 ],

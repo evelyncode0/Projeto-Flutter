@@ -5,6 +5,7 @@ const itensIniciais = <ItemCatalogo>[
     id: 'livro-001',
     titulo: 'Clean Code',
     descricao: 'Praticas para codigo legivel',
+    categoria: 'Estudos',
     status: StatusItem.emAndamento,
     favorito: true,
   ),
@@ -13,6 +14,7 @@ const itensIniciais = <ItemCatalogo>[
     id: 'item-002',
     titulo: 'Dart em Prática',
     descricao: 'Material para estudar Dart.',
+    categoria: 'Estudos',
     status: StatusItem.queroConhecer,
   ),
 
@@ -20,6 +22,7 @@ const itensIniciais = <ItemCatalogo>[
   ItemCatalogo(
     id: 'item-003',
     titulo: 'Flutter Essencial',
+    categoria: 'Estudos',
     status: StatusItem.concluido,
   ),
 
@@ -27,6 +30,7 @@ const itensIniciais = <ItemCatalogo>[
     id: 'item-004',
     titulo: 'Desenvolvimento Mobile',
     descricao: 'Conteúdo da faculdade.',
+    categoria: 'Estudos',
     status: StatusItem.emAndamento,
   ),
 ];

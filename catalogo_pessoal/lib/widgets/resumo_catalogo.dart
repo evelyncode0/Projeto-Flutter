@@ -6,21 +6,20 @@ class ResumoCatalogo extends StatelessWidget {
   const ResumoCatalogo({
     required this.itemSelecionado,
     required this.onStatusChanged,
+    required this.onEditar,
     super.key,
   });
 
   final ItemCatalogo? itemSelecionado;
-
   final void Function(String id, StatusItem novoStatus) onStatusChanged;
+  final void Function(ItemCatalogo item) onEditar;
 
   String _nomeStatus(StatusItem status) {
     switch (status) {
       case StatusItem.queroConhecer:
         return 'Quero conhecer';
-
       case StatusItem.emAndamento:
         return 'Em andamento';
-
       case StatusItem.concluido:
         return 'Concluído';
     }
@@ -38,7 +37,6 @@ class ResumoCatalogo extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Resumo', style: textTheme.titleLarge),
-
             const SizedBox(height: 8),
 
             if (itemSelecionado == null) ...[
@@ -78,6 +76,19 @@ class ResumoCatalogo extends StatelessWidget {
 
               Text(
                 itemSelecionado!.favorito ? '❤️ Favorito' : '♡ Não favorito',
+              ),
+
+              const SizedBox(height: 16),
+
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: () {
+                    onEditar(itemSelecionado!);
+                  },
+                  icon: const Icon(Icons.edit),
+                  label: const Text('Editar item'),
+                ),
               ),
             ],
           ],

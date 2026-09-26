@@ -8,43 +8,52 @@ class CatalogoGrade extends StatelessWidget {
     required this.itens,
     required this.onFavoritoPressed,
     required this.onItemPressed,
+    required this.onDetalhesPressed,
     required this.onRemover,
     super.key,
   });
 
   final List<ItemCatalogo> itens;
+
   final void Function(String id) onFavoritoPressed;
+
   final void Function(ItemCatalogo item) onItemPressed;
+
+  final void Function(ItemCatalogo item) onDetalhesPressed;
+
   final void Function(String id) onRemover;
 
   @override
   Widget build(BuildContext context) {
-    // Estado vazio: não existem itens para mostrar.
-    if (itens.isEmpty) {
-      return const Center(child: Text('Nenhum item no catálogo.'));
-    }
-
-    // Lista dinâmica de itens.
-    return ListView.builder(
+    return ListView.separated(
+      padding: const EdgeInsets.only(bottom: 16),
       itemCount: itens.length,
+
+      separatorBuilder: (context, index) {
+        return const SizedBox(height: 12);
+      },
+
       itemBuilder: (context, index) {
         final item = itens[index];
 
-        return Padding(
-          key: ValueKey(item.id),
-          padding: const EdgeInsets.only(bottom: 12),
-          child: ItemCard(
-            item: item,
-            onFavoritoPressed: () {
-              onFavoritoPressed(item.id);
-            },
-            onItemPressed: () {
-              onItemPressed(item);
-            },
-            onRemover: () {
-              onRemover(item.id);
-            },
-          ),
+        return ItemCard(
+          item: item,
+
+          onFavoritoPressed: () {
+            onFavoritoPressed(item.id);
+          },
+
+          onItemPressed: () {
+            onItemPressed(item);
+          },
+
+          onDetalhesPressed: () {
+            onDetalhesPressed(item);
+          },
+
+          onRemover: () {
+            onRemover(item.id);
+          },
         );
       },
     );
