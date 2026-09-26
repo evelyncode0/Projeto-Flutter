@@ -123,21 +123,6 @@ class _CatalogoHomeState extends State<CatalogoHome> {
     });
   }
 
-  // Altera o status de um item usando o ID.
-  void _alterarStatus(String id, StatusItem novoStatus) {
-    setState(() {
-      _itens = [
-        for (final item in _itens)
-          if (item.id == id) item.copyWith(status: novoStatus) else item,
-      ];
-
-      // Atualiza também o item selecionado.
-      if (_itemSelecionado?.id == id) {
-        _itemSelecionado = _itens.firstWhere((item) => item.id == id);
-      }
-    });
-  }
-
   // Remove um item usando o ID.
   void _remover(String id) {
     setState(() {
@@ -265,7 +250,6 @@ class _CatalogoHomeState extends State<CatalogoHome> {
                       width: double.infinity,
                       child: ResumoCatalogo(
                         itemSelecionado: _itemSelecionado,
-                        onStatusChanged: _alterarStatus,
                         onEditar: _editarItem,
                       ),
                     ),
@@ -338,7 +322,6 @@ class _CatalogoHomeState extends State<CatalogoHome> {
                     width: 320,
                     child: ResumoCatalogo(
                       itemSelecionado: _itemSelecionado,
-                      onStatusChanged: _alterarStatus,
                       onEditar: _editarItem,
                     ),
                   ),

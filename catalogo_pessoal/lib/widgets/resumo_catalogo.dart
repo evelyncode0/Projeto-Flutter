@@ -5,13 +5,11 @@ import '../models/item_catalogo.dart';
 class ResumoCatalogo extends StatelessWidget {
   const ResumoCatalogo({
     required this.itemSelecionado,
-    required this.onStatusChanged,
     required this.onEditar,
     super.key,
   });
 
   final ItemCatalogo? itemSelecionado;
-  final void Function(String id, StatusItem novoStatus) onStatusChanged;
   final void Function(ItemCatalogo item) onEditar;
 
   String _nomeStatus(StatusItem status) {
@@ -50,27 +48,7 @@ class ResumoCatalogo extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              Text('Status:', style: textTheme.titleSmall),
-
-              const SizedBox(height: 4),
-
-              DropdownButton<StatusItem>(
-                value: itemSelecionado!.status,
-                isExpanded: true,
-                items: StatusItem.values.map((status) {
-                  return DropdownMenuItem<StatusItem>(
-                    value: status,
-                    child: Text(_nomeStatus(status)),
-                  );
-                }).toList(),
-                onChanged: (novoStatus) {
-                  if (novoStatus == null) {
-                    return;
-                  }
-
-                  onStatusChanged(itemSelecionado!.id, novoStatus);
-                },
-              ),
+              Text('Status: ${_nomeStatus(itemSelecionado!.status)}'),
 
               const SizedBox(height: 8),
 

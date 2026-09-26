@@ -18,8 +18,10 @@ class _TelaFormularioState extends State<TelaFormulario> {
 
   late final TextEditingController _tituloController;
   late final TextEditingController _categoriaController;
+  late final TextEditingController _descricaoController;
 
   final _categoriaFocus = FocusNode();
+  final _descricaoFocus = FocusNode();
 
   bool _submetendo = false;
 
@@ -32,6 +34,7 @@ class _TelaFormularioState extends State<TelaFormulario> {
     _tituloController = TextEditingController(text: item?.titulo ?? '');
 
     _categoriaController = TextEditingController(text: item?.categoria ?? '');
+    _descricaoController = TextEditingController(text: item?.descricao ?? '');
   }
 
   String? _validarTitulo(String? valor) {
@@ -70,7 +73,9 @@ class _TelaFormularioState extends State<TelaFormulario> {
       titulo: _tituloController.text.trim(),
       categoria: _categoriaController.text.trim(),
       status: inicial?.status ?? StatusItem.queroConhecer,
-      descricao: inicial?.descricao,
+      descricao: _descricaoController.text.trim().isEmpty
+          ? null
+          : _descricaoController.text.trim(),
       favorito: inicial?.favorito ?? false,
     );
   }
@@ -97,7 +102,9 @@ class _TelaFormularioState extends State<TelaFormulario> {
   void dispose() {
     _tituloController.dispose();
     _categoriaController.dispose();
+    _descricaoController.dispose();
     _categoriaFocus.dispose();
+    _descricaoFocus.dispose();
 
     super.dispose();
   }
@@ -136,7 +143,7 @@ class _TelaFormularioState extends State<TelaFormulario> {
                 TextFormField(
                   controller: _categoriaController,
                   focusNode: _categoriaFocus,
-                  textInputAction: TextInputAction.done,
+                  textInputAction: TextInputAction.next,
                   decoration: const InputDecoration(
                     labelText: 'Categoria',
                     hintText: 'Ex.: Livro, Filme, Série',
@@ -144,8 +151,24 @@ class _TelaFormularioState extends State<TelaFormulario> {
                   ),
                   validator: _validarCategoria,
                   onFieldSubmitted: (_) {
-                    _salvar();
+                    _descricaoFocus.requestFocus();
                   },
+                ),
+
+                const SizedBox(height: 16),
+
+                TextFormField(
+                  controller: _descricaoController,
+                  focusNode: _descricaoFocus,
+                  minLines: 3,
+                  maxLines: 5,
+                  textInputAction: TextInputAction.newline,
+                  decoration: const InputDecoration(
+                    labelText: 'Descrição',
+                    hintText: 'Adicione detalhes sobre o item (opcional)',
+                    alignLabelWithHint: true,
+                    border: OutlineInputBorder(),
+                  ),
                 ),
 
                 const SizedBox(height: 24),
