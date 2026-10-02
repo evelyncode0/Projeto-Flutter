@@ -38,7 +38,7 @@ class ResumoCatalogo extends StatelessWidget {
             const SizedBox(height: 8),
 
             if (itemSelecionado == null) ...[
-              const Text('Selecione um item para ver os detalhes.'),
+              const Text('Selecione um curso para ver os detalhes.'),
             ] else ...[
               Text(itemSelecionado!.titulo, style: textTheme.titleMedium),
 
@@ -65,7 +65,7 @@ class ResumoCatalogo extends StatelessWidget {
                     onEditar(itemSelecionado!);
                   },
                   icon: const Icon(Icons.edit),
-                  label: const Text('Editar item'),
+                  label: const Text('Editar'),
                 ),
               ),
             ],

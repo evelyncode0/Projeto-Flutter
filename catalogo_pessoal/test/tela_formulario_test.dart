@@ -11,11 +11,11 @@ void main() {
     await tester.pumpWidget(const MaterialApp(home: TelaFormulario()));
 
     // Act: tenta criar o item sem preencher os campos.
-    await tester.tap(find.text('Criar item'));
+    await tester.tap(find.text('Criar curso'));
 
     await tester.pump();
 
     // Assert: verifica se a validação do título apareceu.
-    expect(find.text('Informe o título'), findsOneWidget);
+    expect(find.text('Digite o nome do curso'), findsOneWidget);
   });
 }

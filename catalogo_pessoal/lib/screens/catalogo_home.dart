@@ -15,19 +15,19 @@ class CatalogoHome extends StatefulWidget {
 }
 
 class _CatalogoHomeState extends State<CatalogoHome> {
-  // Lista principal de itens do catálogo.
+  // Lista principal de cursos do catálogo.
   List<ItemCatalogo> _itens = [...itensIniciais];
 
   // Controla se o filtro "Favoritos" está ativado.
   bool _mostrarSomenteFavoritos = false;
 
-  // Guarda o item que foi selecionado.
+  // Guarda o curso que foi selecionado.
   ItemCatalogo? _itemSelecionado;
 
   // Quantidade de favoritos.
   int get _totalFavoritos => _itens.where((item) => item.favorito).length;
 
-  // Alterna o favorito de um item usando o ID.
+  // Alterna o favorito de um curso usando o ID.
   void _alternarFavorito(String id) {
     setState(() {
       _itens = [
@@ -35,7 +35,7 @@ class _CatalogoHomeState extends State<CatalogoHome> {
           if (item.id == id) item.copyWith(favorito: !item.favorito) else item,
       ];
 
-      // Mantém o item selecionado atualizado.
+      // Mantém o curso selecionado atualizado.
       if (_itemSelecionado?.id == id) {
         _itemSelecionado = _itens.firstWhere((item) => item.id == id);
       }
@@ -49,14 +49,14 @@ class _CatalogoHomeState extends State<CatalogoHome> {
     });
   }
 
-  // Seleciona um item do catálogo.
+  // Seleciona um curso do catálogo.
   void _selecionarItem(ItemCatalogo item) {
     setState(() {
       _itemSelecionado = item;
     });
   }
 
-  // Abre o formulário para criar um novo item.
+  // Abre o formulário para criar um novo curso.
   Future<void> _abrirFormulario() async {
     final resultado = await Navigator.push<ItemCatalogo>(
       context,
@@ -74,11 +74,11 @@ class _CatalogoHomeState extends State<CatalogoHome> {
     _aplicarResultado(resultado);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Item adicionado com sucesso!')),
+      const SnackBar(content: Text('Curso adicionado com sucesso!')),
     );
   }
 
-  // Abre o formulário para editar um item existente.
+  // Abre o formulário para editar um curso existente.
   Future<void> _editarItem(ItemCatalogo item) async {
     final resultado = await Navigator.push<ItemCatalogo>(
       context,
@@ -96,14 +96,14 @@ class _CatalogoHomeState extends State<CatalogoHome> {
     _aplicarResultado(resultado);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Item atualizado com sucesso!')),
+      const SnackBar(content: Text('Curso atualizado com sucesso!')),
     );
   }
 
   // Aplica o resultado vindo do formulário.
   //
-  // Se o ID já existir, substitui o item.
-  // Se o ID não existir, adiciona um novo item.
+  // Se o ID já existir, substitui o curso.
+  // Se o ID não existir, adiciona um novo curso.
   void _aplicarResultado(ItemCatalogo resultado) {
     final indice = _itens.indexWhere((item) => item.id == resultado.id);
 
@@ -123,12 +123,12 @@ class _CatalogoHomeState extends State<CatalogoHome> {
     });
   }
 
-  // Remove um item usando o ID.
+  // Remove um curso usando o ID.
   void _remover(String id) {
     setState(() {
       _itens = _itens.where((item) => item.id != id).toList();
 
-      // Se o item removido estava selecionado,
+      // Se o curso removido estava selecionado,
       // limpa a seleção.
       if (_itemSelecionado?.id == id) {
         _itemSelecionado = null;
@@ -136,7 +136,7 @@ class _CatalogoHomeState extends State<CatalogoHome> {
     });
   }
 
-  // Abre a tela de detalhes de um item.
+  // Abre a tela de detalhes de um curso.
   Future<void> _abrirDetalhe(ItemCatalogo item) async {
     final resultado = await Navigator.push<ItemCatalogo>(
       context,
@@ -154,7 +154,7 @@ class _CatalogoHomeState extends State<CatalogoHome> {
     _substituirPorId(resultado);
   }
 
-  // Substitui um item existente pelo mesmo ID.
+  // Substitui um curso existente pelo mesmo ID.
   void _substituirPorId(ItemCatalogo atualizado) {
     setState(() {
       _itens = _itens.map((item) {
@@ -168,6 +168,35 @@ class _CatalogoHomeState extends State<CatalogoHome> {
     });
   }
 
+  // Exibe uma mensagem quando não existem cursos para mostrar.
+  Widget _estadoVazio(TextTheme textTheme) {
+    final nenhumCursoCadastrado = _itens.isEmpty;
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.school_outlined, size: 64),
+          const SizedBox(height: 16),
+          Text(
+            nenhumCursoCadastrado
+                ? 'Nenhum curso cadastrado'
+                : 'Nenhum curso favorito',
+            style: textTheme.titleLarge,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            nenhumCursoCadastrado
+                ? 'Adicione seu primeiro curso para começar.'
+                : 'Marque um curso como favorito para vê-lo aqui.',
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -177,20 +206,19 @@ class _CatalogoHomeState extends State<CatalogoHome> {
         ? _itens.where((item) => item.favorito).toList()
         : _itens;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Meu catálogo')),
+    final lista = CatalogoGrade(
+      itens: itensVisiveis,
+      onFavoritoPressed: _alternarFavorito,
+      onItemPressed: _selecionarItem,
+      onDetalhesPressed: _abrirDetalhe,
+      onRemover: _remover,
+    );
 
+    return Scaffold(
+      appBar: AppBar(title: const Text('Meu catálogo de cursos')),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final lista = CatalogoGrade(
-              itens: itensVisiveis,
-              onFavoritoPressed: _alternarFavorito,
-              onItemPressed: _selecionarItem,
-              onDetalhesPressed: _abrirDetalhe,
-              onRemover: _remover,
-            );
-
             // ==========================================
             // LAYOUT PARA ESPAÇOS MENORES
             // ==========================================
@@ -205,18 +233,15 @@ class _CatalogoHomeState extends State<CatalogoHome> {
                       children: [
                         Expanded(
                           child: Text(
-                            'Seus itens: ${_itens.length}',
+                            'Seus cursos: ${_itens.length}',
                             style: textTheme.headlineSmall,
                           ),
                         ),
-
                         Text(
                           'Favoritos: $_totalFavoritos',
                           style: textTheme.bodyMedium,
                         ),
-
                         const SizedBox(width: 12),
-
                         FilterChip(
                           label: const Text('Favoritos'),
                           selected: _mostrarSomenteFavoritos,
@@ -226,22 +251,26 @@ class _CatalogoHomeState extends State<CatalogoHome> {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 12),
 
-                    // Botão para adicionar item.
+                    // Botão para adicionar curso.
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: _abrirFormulario,
                         icon: const Icon(Icons.add),
-                        label: const Text('Adicionar item'),
+                        label: const Text('Adicionar curso'),
                       ),
                     ),
 
                     const SizedBox(height: 12),
 
-                    Expanded(child: lista),
+                    // Mostra a lista ou o estado vazio.
+                    Expanded(
+                      child: itensVisiveis.isEmpty
+                          ? _estadoVazio(textTheme)
+                          : lista,
+                    ),
 
                     const SizedBox(height: 16),
 
@@ -274,18 +303,15 @@ class _CatalogoHomeState extends State<CatalogoHome> {
                           children: [
                             Expanded(
                               child: Text(
-                                'Seus itens: ${_itens.length}',
+                                'Seus cursos: ${_itens.length}',
                                 style: textTheme.headlineSmall,
                               ),
                             ),
-
                             Text(
                               'Favoritos: $_totalFavoritos',
                               style: textTheme.bodyMedium,
                             ),
-
                             const SizedBox(width: 12),
-
                             FilterChip(
                               label: const Text('Favoritos'),
                               selected: _mostrarSomenteFavoritos,
@@ -295,22 +321,26 @@ class _CatalogoHomeState extends State<CatalogoHome> {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 12),
 
-                        // Botão para adicionar item.
+                        // Botão para adicionar curso.
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton.icon(
                             onPressed: _abrirFormulario,
                             icon: const Icon(Icons.add),
-                            label: const Text('Adicionar item'),
+                            label: const Text('Adicionar curso'),
                           ),
                         ),
 
                         const SizedBox(height: 12),
 
-                        Expanded(child: lista),
+                        // Mostra a lista ou o estado vazio.
+                        Expanded(
+                          child: itensVisiveis.isEmpty
+                              ? _estadoVazio(textTheme)
+                              : lista,
+                        ),
                       ],
                     ),
                   ),

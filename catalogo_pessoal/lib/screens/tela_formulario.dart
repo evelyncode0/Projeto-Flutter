@@ -113,7 +113,7 @@ class _TelaFormularioState extends State<TelaFormulario> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.editando ? 'Editar item' : 'Novo item'),
+        title: Text(widget.editando ? 'Editar curso' : 'Novo curso'),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -128,8 +128,8 @@ class _TelaFormularioState extends State<TelaFormulario> {
                   controller: _tituloController,
                   textInputAction: TextInputAction.next,
                   decoration: const InputDecoration(
-                    labelText: 'Título',
-                    hintText: 'Digite o título do item',
+                    labelText: 'Nome',
+                    hintText: 'Digite o nome do curso',
                     border: OutlineInputBorder(),
                   ),
                   validator: _validarTitulo,
@@ -146,7 +146,7 @@ class _TelaFormularioState extends State<TelaFormulario> {
                   textInputAction: TextInputAction.next,
                   decoration: const InputDecoration(
                     labelText: 'Categoria',
-                    hintText: 'Ex.: Livro, Filme, Série',
+                    hintText: 'Ex.: Graduação, Técnico, Cursos rápidos',
                     border: OutlineInputBorder(),
                   ),
                   validator: _validarCategoria,
@@ -165,7 +165,7 @@ class _TelaFormularioState extends State<TelaFormulario> {
                   textInputAction: TextInputAction.newline,
                   decoration: const InputDecoration(
                     labelText: 'Descrição',
-                    hintText: 'Adicione detalhes sobre o item (opcional)',
+                    hintText: 'Adicione detalhes sobre o curso (opcional)',
                     alignLabelWithHint: true,
                     border: OutlineInputBorder(),
                   ),
@@ -177,7 +177,7 @@ class _TelaFormularioState extends State<TelaFormulario> {
                   onPressed: _submetendo ? null : _salvar,
                   icon: const Icon(Icons.save),
                   label: Text(
-                    widget.editando ? 'Salvar alterações' : 'Criar item',
+                    widget.editando ? 'Salvar alterações' : 'Criar curso',
                   ),
                 ),
               ],

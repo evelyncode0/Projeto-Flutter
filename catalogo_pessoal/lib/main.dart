@@ -12,7 +12,7 @@ class CatalogoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Catálogo Pessoal',
+      title: 'Meu Catálogo de Cursos',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
         useMaterial3: true,

@@ -30,7 +30,7 @@ class _TelaDetalheState extends State<TelaDetalhe> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Detalhes do item')),
+      appBar: AppBar(title: const Text('Detalhes do curso')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -55,7 +55,7 @@ class _TelaDetalheState extends State<TelaDetalhe> {
               initialValue: _status,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Status do item',
+                labelText: 'Status do curso',
               ),
               items: StatusItem.values.map((status) {
                 return DropdownMenuItem(

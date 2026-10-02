@@ -45,7 +45,7 @@ class ItemCard extends StatelessWidget {
               icon: const Icon(Icons.info_outline),
             ),
             IconButton(
-              tooltip: 'Remover item',
+              tooltip: 'Remover curso',
               onPressed: onRemover,
               icon: const Icon(Icons.delete_outline),
             ),
