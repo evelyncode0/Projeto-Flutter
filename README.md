@@ -1,6 +1,8 @@
-# Catálogo Pessoal
+# Catálogo Pessoal de Cursos
 
-Aplicação Flutter para organizar cursos, livros e outros conteúdos. Permite cadastrar e editar itens, consultar detalhes, atualizar o status, marcar favoritos, filtrar favoritos e remover itens.
+Projeto desenvolvido como parte dos estudos do curso de Análise e Desenvolvimento de Sistemas (ADS), com o objetivo de praticar o desenvolvimento de aplicações mobile utilizando Dart e Flutter.
+
+O projeto consiste em um aplicativo de catálogo pessoal de cursos, permitindo ao usuário organizar e acompanhar os cursos que deseja conhecer, está realizando ou já concluiu.
 
 > Os dados são mantidos apenas durante a execução. Ao fechar ou reiniciar o app, a lista volta aos itens iniciais.
 
